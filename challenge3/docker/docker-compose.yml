@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  challenge3-nginx:
+    build: ./nginx
+    ports:
+      - "8080:80"
+    depends_on:
+      - challenge3-node-service
+
+  challenge3-node-service:
+    build: ./api
+    environment:
+      DB_HOST: ${MYSQL_HOST}
+      DB_USERNAME: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      DB_DATABASE: ${MYSQL_DATABASE}
+      DB_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - ./api:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    depends_on: 
+      - challenge3-db
+
+  challenge3-db:
+    build: ./db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
